@@ -62,10 +62,12 @@ elif [ "$1" = "install" ]; then
 	IN_CI=1 ./include/download-sdk.sh
 
 	msg "Fetching mpv"
-	mkdir -p deps/mpv
-	$WGET https://github.com/Clouddark75/mpv/archive/master.tar.gz -O master.tgz
-	tar -xzf master.tgz -C deps/mpv --strip-components=1
-	rm master.tgz
+
+ if [ ! -d deps/mpv/.git ]; then
+	 git clone https://github.com/Clouddark75/mpv deps/mpv
+ fi
+
+ git -C deps/mpv fetch --tags
 
 	msg "Trying to fetch existing prefix"
 	mkdir -p prefix

@@ -68,6 +68,7 @@ elif [ "$1" = "install" ]; then
  fi
 
  git -C deps/mpv fetch --tags
+ git -C deps/mpv describe --tags --always > deps/mpv/VERSION
 
 	msg "Trying to fetch existing prefix"
 	mkdir -p prefix

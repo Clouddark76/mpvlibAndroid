@@ -171,7 +171,7 @@ jobs:
             ./buildall.sh --arch "$arch" mpv
           done
 
-          ./buildall.sh -n mpv-android
+          ./buildall.sh
 
       - name: Show ccache stats after build
         if: always()

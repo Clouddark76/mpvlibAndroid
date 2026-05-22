@@ -63,6 +63,28 @@ object MPVLib {
 
     external fun observeProperty(property: String, format: Int)
 
+    /**
+     * Optimized helper to enable Vulkan with zero-copy HW+ support.
+     * This follows the best practices discussed in early 2026.
+     */
+    fun setupVulkan(useHwPlus: Boolean = true) {
+        setOptionString("vo", "gpu-next")
+        setOptionString("gpu-api", "vulkan")
+        setOptionString("gpu-context", "androidvk")
+        setOptionString("vd-lavc-dr", "yes")
+        
+        if (useHwPlus) {
+            setOptionString("hwdec", "mediacodec") // HW+
+        } else {
+            setOptionString("hwdec", "mediacodec-copy") // HW
+        }
+
+        // Performance optimizations for mobile Vulkan drivers
+        setOptionString("vulkan-async-compute", "yes")
+        setOptionString("vulkan-async-transfer", "yes")
+        setOptionString("vulkan-queue-count", "1")
+    }
+
     private val observers: MutableList<EventObserver> = ArrayList()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

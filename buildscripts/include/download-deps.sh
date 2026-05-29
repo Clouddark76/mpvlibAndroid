@@ -27,7 +27,7 @@ fi
 # freetype2 - latest is 2.14.3
 if [ ! -d freetype2 ]; then
 	mkdir freetype2
-	$WGET https://download.savannah.gnu.org/releases/freetype/freetype-$v_freetype.tar.gz -O - | \
+	$WGET https://mirrors.ocf.berkeley.edu/nongnu/freetype/freetype-$v_freetype.tar.gz -O - | \
 		tar -xz -C freetype2 --strip-components=1
 fi
 
@@ -76,6 +76,13 @@ if [ ! -d openssl ]; then
 		tar -xz -C openssl --strip-components=1
 fi
 
+# curl
+if [ ! -d curl ]; then
+	mkdir curl
+	$WGET https://curl.se/download/curl-$v_curl.tar.gz -O - | \
+		tar -xz -C curl --strip-components=1
+fi
+
 # shaderc
 mkdir -p shaderc
 cat >shaderc/README <<'HEREDOC'
@@ -88,5 +95,30 @@ HEREDOC
 
 # mpv
 [ ! -d mpv ] && git clone https://github.com/Clouddark75/mpv
+
+# python
+if [ ! -d python ]; then
+	mkdir python
+	$WGET https://www.python.org/ftp/python/$v_python/Python-$v_python.tar.xz -O - | \
+		tar -xJ -C python --strip-components=1
+
+	cd python
+	# Enables all modules except the explicitly excluded ones.
+	python3 ../../include/py/uncomment.py Modules/Setup \
+		'_bz2|_ctypes|_lzma|_uuid|_posixshmem|_multiprocessing|readline|_test|grp|termios|resource|_md5|_sha[123]|_tkinter|syslog|_curses|_g?dbm|_(multibyte)?codec|_hashlib|_ssl'
+	# Prevent host paths from sneaking in.
+	sed -re 's|-[IL]\$\(prefix\)/[^ ]+ | |' -i Modules/Setup
+	sed -re 's|-[IL]\$\(exec_prefix\)/[^ ]+ | |' -i Modules/Setup
+	printf '%s\n' "_hashlib _hashopenssl.c -lcrypto" "_ssl _ssl.c -lssl -lcrypto" >>Modules/Setup
+	cd ..
+fi
+
+# yt-dlp
+if [ ! -f yt-dlp/yt-dlp ] || [ "$(cat yt-dlp/version.txt 2>/dev/null || true)" != "$v_ytdlp" ]; then
+	mkdir -p yt-dlp
+	$WGET https://github.com/yt-dlp/yt-dlp/releases/download/$v_ytdlp/yt-dlp -O yt-dlp/yt-dlp
+	chmod +x yt-dlp/yt-dlp
+	echo "$v_ytdlp" >yt-dlp/version.txt
+fi
 
 cd ..

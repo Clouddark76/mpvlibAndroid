@@ -54,6 +54,7 @@ meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
 	--default-library shared \
 	-Diconv=disabled \
 	-Dlua=enabled \
+	-Dlibcurl=enabled \
 	-Djavascript=enabled \
 	-Dvulkan=enabled \
 	-Dlibmpv=true \

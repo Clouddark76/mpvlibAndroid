@@ -26,7 +26,14 @@ if [ -n "$ndk_triple" ]; then
 fi
 
 toolchain=$(echo "$DIR/sdk/android-ndk-${v_ndk}/toolchains/llvm/prebuilt/"*)
-[ -d "$toolchain" ] && \
-	export PATH="$toolchain/bin:$DIR/sdk/android-ndk-${v_ndk}:$DIR/sdk/bin:$PATH"
+if [ -d "$toolchain" ]; then
+	ccache_wrappers="$DIR/ccache-wrappers"
+	if [ -d "$ccache_wrappers" ]; then
+		export CCACHE_PATH="$toolchain/bin:$PATH${CCACHE_PATH:+:$CCACHE_PATH}"
+		export PATH="$ccache_wrappers:$toolchain/bin:$DIR/sdk/android-ndk-${v_ndk}:$DIR/sdk/bin:$PATH"
+	else
+		export PATH="$toolchain/bin:$DIR/sdk/android-ndk-${v_ndk}:$DIR/sdk/bin:$PATH"
+	fi
+fi
 export ANDROID_HOME="$DIR/sdk/android-sdk-$os"
 unset ANDROID_SDK_ROOT ANDROID_NDK_ROOT

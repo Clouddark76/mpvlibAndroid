@@ -31,6 +31,11 @@ abstract class BaseMPVView(context: Context, attrs: AttributeSet) : SurfaceView(
         for (opt in arrayOf("gpu-shader-cache-dir", "icc-cache-dir")) {
             MPVLib.setOptionString(opt, cacheDir)
         }
+        try {
+            android.system.Os.setenv("SSL_CERT_FILE", "$configDir/cacert.pem", true)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set SSL_CERT_FILE", e)
+        }
         initOptions()
 
         MPVLib.init()

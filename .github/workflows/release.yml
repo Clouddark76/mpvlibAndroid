@@ -141,9 +141,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: gh-cache/
-          key: native-prefix-${{ runner.os }}-${{ env.CACHE_IDENTIFIER }}
+          key: native-prefix-${{ runner.os }}-v2-${{ env.CACHE_IDENTIFIER }}
           restore-keys: |
-            native-prefix-${{ runner.os }}-
+            native-prefix-${{ runner.os }}-v2-
 
       - name: Restore ccache
         id: ccache-cache
@@ -199,7 +199,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: gh-cache/
-          key: native-prefix-${{ runner.os }}-${{ env.CACHE_IDENTIFIER }}
+          key: native-prefix-${{ runner.os }}-v2-${{ env.CACHE_IDENTIFIER }}
 
       - name: Show ccache stats before build
         run: |
@@ -231,7 +231,7 @@ jobs:
           cd buildscripts
 
           for arch in armv7l arm64 x86 x86_64; do
-            ./buildall.sh --arch "$arch" -n mpv
+            ./buildall.sh --arch "$arch" mpv
           done
 
           ./buildall.sh -n mpv-android

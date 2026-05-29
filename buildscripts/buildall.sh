@@ -132,8 +132,8 @@ build () {
 		pushd deps/$1
 		BUILDSCRIPT=../../scripts/$1.sh
 	fi
-	[ $cleanbuild -eq 1 ] && $BUILDSCRIPT clean
-	$BUILDSCRIPT build
+	[ $cleanbuild -eq 1 ] && bash -e "$BUILDSCRIPT" clean
+	bash -e "$BUILDSCRIPT" build
 	popd
 }
 

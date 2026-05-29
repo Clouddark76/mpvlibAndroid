@@ -16,6 +16,9 @@ v_fribidi=1.0.16
 v_freetype=2.14.3
 v_mbedtls=3.6.5
 v_openssl=3.5.5
+v_python=3.13.12
+v_ytdlp=2026.03.17
+v_curl=8.20.0
 v_mujs=1.3.9
 
 
@@ -33,10 +36,12 @@ dep_libass=(freetype2 fribidi harfbuzz unibreak)
 dep_lua=()
 dep_mujs=()
 dep_openssl=()
+dep_python=(openssl)
+dep_curl=(mbedtls)
 dep_shaderc=()
 dep_libplacebo=(shaderc)
-dep_mpv=(ffmpeg libass lua libplacebo mujs)
-dep_mpv_android=(mpv)
+dep_mpv=(ffmpeg libass lua libplacebo mujs curl)
+dep_mpv_android=(mpv python)
 
 
 ## for CI workflow
@@ -45,4 +50,4 @@ dep_mpv_android=(mpv)
 v_ci_ffmpeg=n8.1
 
 # filename used to uniquely identify a build prefix
-ci_tarball="prefix-ndk-${v_ndk}-lua-${v_lua}-mujs-${v_mujs}-unibreak-${v_unibreak}-harfbuzz-${v_harfbuzz}-fribidi-${v_fribidi}-freetype-${v_freetype}-mbedtls-${v_mbedtls}-openssl-${v_openssl}-ffmpeg-${v_ci_ffmpeg}.tgz"
+ci_tarball="prefix-all-ndk-${v_ndk}-lua-${v_lua}-mujs-${v_mujs}-unibreak-${v_unibreak}-harfbuzz-${v_harfbuzz}-fribidi-${v_fribidi}-freetype-${v_freetype}-mbedtls-${v_mbedtls}-openssl-${v_openssl}-python-${v_python}-curl-${v_curl}-ffmpeg-${v_ci_ffmpeg}.tgz"

@@ -26,8 +26,11 @@ jobs:
       CACHE_FOLDER: ${{ github.workspace }}/gh-cache
 
       CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_BASEDIR: ${{ github.workspace }}
       CCACHE_MAXSIZE: 5G
       CCACHE_COMPRESS: "true"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_DISABLE: "true"
 
       GRADLE_OPTS: >-
         -Xmx4G
@@ -56,18 +59,33 @@ jobs:
         run: |
           buildscripts/include/ci.sh export >> "$GITHUB_ENV"
 
-      - name: Restore project build cache
-        uses: actions/cache@v4
+      - name: Restore Android SDK cache
+        id: android-sdk-cache
+        uses: actions/cache/restore@v4
         with:
-          path: |
-            gh-cache/
-            .ccache/
-            ~/.gradle/caches/
-            ~/.gradle/wrapper/
-            ~/.android/
-          key: build-${{ runner.os }}-${{ hashFiles('buildscripts/**/*.sh', 'buildscripts/include/*.sh', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          path: buildscripts/sdk/
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('buildscripts/include/depinfo.sh', 'buildscripts/include/download-sdk.sh') }}
           restore-keys: |
-            build-${{ runner.os }}-
+            android-sdk-${{ runner.os }}-
+
+      - name: Restore native prefix cache
+        id: native-prefix-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: gh-cache/
+          key: native-prefix-${{ runner.os }}-${{ env.CACHE_IDENTIFIER }}
+          restore-keys: |
+            native-prefix-${{ runner.os }}-
+
+      - name: Restore ccache
+        id: ccache-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .ccache/
+          key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-${{ github.ref_name }}-
+            ccache-${{ runner.os }}-
 
       - name: Install system dependencies
         run: |
@@ -77,6 +95,7 @@ jobs:
             automake \
             build-essential \
             ccache \
+            gcc g++ \
             cmake \
             gettext \
             gperf \
@@ -100,6 +119,20 @@ jobs:
           mkdir -p "$CACHE_FOLDER"
           buildscripts/include/ci.sh install
 
+      - name: Save Android SDK cache
+        if: steps.android-sdk-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: buildscripts/sdk/
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('buildscripts/include/depinfo.sh', 'buildscripts/include/download-sdk.sh') }}
+
+      - name: Save native prefix cache
+        if: steps.native-prefix-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: gh-cache/
+          key: native-prefix-${{ runner.os }}-${{ env.CACHE_IDENTIFIER }}
+
       - name: Show ccache stats before build
         run: |
           ccache --zero-stats || true
@@ -113,10 +146,8 @@ jobs:
 
           cd buildscripts
 
-          ./download.sh > /dev/null
-
           for arch in armv7l arm64 x86 x86_64; do
-            ./buildall.sh --arch "$arch" mpv
+            ./buildall.sh --arch "$arch" -n mpv
           done
 
           ./buildall.sh -n mpv-android
@@ -125,6 +156,13 @@ jobs:
         if: always()
         run: |
           ccache --show-stats || true
+
+      - name: Save ccache
+        if: always() && steps.ccache-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .ccache/
+          key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
 
       - name: Stage AAR artifact
         run: |

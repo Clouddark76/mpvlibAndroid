@@ -26,6 +26,31 @@ nativeprefix () {
 	fi
 }
 
+pythonassetdir () {
+	case "$1" in
+		armv7l) echo "$MPV_ANDROID/app/src/main/assets/py.armeabi-v7a" ;;
+		arm64) echo "$MPV_ANDROID/app/src/main/assets/py.arm64-v8a" ;;
+		x86) echo "$MPV_ANDROID/app/src/main/assets/py.x86" ;;
+		x86_64) echo "$MPV_ANDROID/app/src/main/assets/py.x86_64" ;;
+		*) return 1 ;;
+	esac
+}
+
+check_python_assets () {
+	local dir
+	dir=$(pythonassetdir "$1") || return 1
+	if [ ! -f "$dir/python3" ]; then
+		echo >&2 "Error: missing python runtime for $1 at $dir/python3"
+		echo >&2 "Build it first: ./buildall.sh --arch $1 python"
+		exit 1
+	fi
+	if ! compgen -G "$dir/python3*.zip" > /dev/null; then
+		echo >&2 "Error: missing python stdlib zip for $1 in $dir"
+		echo >&2 "Build it first: ./buildall.sh --arch $1 python"
+		exit 1
+	fi
+}
+
 prefix32=$(nativeprefix "armv7l")
 prefix64=$(nativeprefix "arm64")
 prefix_x64=$(nativeprefix "x86_64")
@@ -36,8 +61,14 @@ if [[ -z "$prefix32" && -z "$prefix64" && -z "$prefix_x64" && -z "$prefix_x86" ]
 	exit 255
 fi
 
-chmod +x $BUILD/scripts/write_versions.sh
-$BUILD/scripts/write_versions.sh $ndk_suffix
+[ -n "$prefix32" ] && check_python_assets "armv7l"
+[ -n "$prefix64" ] && check_python_assets "arm64"
+[ -n "$prefix_x64" ] && check_python_assets "x86_64"
+[ -n "$prefix_x86" ] && check_python_assets "x86"
+
+
+
+bash "$BUILD/scripts/write_versions.sh" $ndk_suffix
 
 PREFIX32=$prefix32 PREFIX64=$prefix64 PREFIX_X64=$prefix_x64 PREFIX_X86=$prefix_x86 \
 ndk-build -C app/src/main -j$cores

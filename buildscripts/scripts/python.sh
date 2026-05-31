@@ -62,6 +62,17 @@ MODULE_BUILDTYPE=static \
 ../configure --host=$ndk_triple --build=${ndk_triple%%-*} \
 	--enable-ipv6 --disable-shared --without-ensurepip \
 	--disable-test-modules --with-build-python
+
+cat >> Modules/Setup.local <<EOF
+*disabled*
+grp
+mmap
+syslog
+nis
+spwd
+_crypt
+EOF
+
 make -j$cores
 
 rm -rf dest

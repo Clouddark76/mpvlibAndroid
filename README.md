@@ -1,6 +1,6 @@
 # mpvlib Android
 
-**MpvRx / mpvlibAndroid** — An Android video player library built on mpv with full **yt-dlp**, **Python 3.13**, and **libcurl** support baked in.
+**MpvRx / mpvlibAndroid** — An Android video player library built on mpv with full **yt-dlp**, **Python 3.12**, and **libcurl** support baked in.
 
 ## What is This?
 
@@ -23,11 +23,10 @@ This library brings the full power of mpv to Android — play any video, stream 
 - **LCEVC** — Low Complexity Enhancement Video Coding (MPEG-5 Part 2)
 - **AV1** — Alliance for Open Media via dav1d (NEON optimized)
 
-### 🖥️ Vulkan Compute & Filters
-- Vulkan 1.3 compute codecs — hardware acceleration on any Vulkan 1.3 GPU
-- Vulkan video filters: deinterlace, crossfade, flip, scale
+### 🖥️ Vulkan Rendering (gpu-next)
+- Advanced Vulkan 1.3 GPU rendering pipeline via `libplacebo` + `shaderc`
+- MPV native hardware-accelerated video scaling and color management
 - Supported GPUs: Adreno 600+ (Snapdragon 845+), Mali-G77+ (Dimensity/Exynos), Xclipse (Exynos 2200+)
-- GPU rendering via libplacebo + shaderc
 
 ### ⚡ ARM v9a Optimized
 - **Dual-tier ARM64 builds**: base v8a + v9a optimized
@@ -42,8 +41,8 @@ This library brings the full power of mpv to Android — play any video, stream 
 - yt-dlp v2026.03.17 bundled and ready
 - Just pass a YouTube URL — yt-dlp handles the rest
 
-### 🐍 Python 3.13 Runtime
-- Full Python 3.13.12 runtime compiled for Android
+### 🐍 Python 3.12 Runtime
+- Full Python 3.12.3 runtime compiled for Android
 - Bundled per-architecture (arm64, x86, x86_64)
 - Includes stdlib with common modules (ssl, bz2, ctypes, lzma, hashlib, uuid)
 - Used by yt-dlp internally, also available for your own scripts
@@ -62,7 +61,7 @@ This library brings the full power of mpv to Android — play any video, stream 
 ### 📜 Scripting
 - **Lua** 5.2.4 — mpv scripts work as-is
 - **JavaScript** via MuJS 1.3.9
-- **Python** 3.13 — for custom logic and automation
+- **Python** 3.12 — for custom logic and automation
 
 ### 🔒 Security
 - SSL/TLS via both MbedTLS and OpenSSL
@@ -185,7 +184,7 @@ Output: `app/build/outputs/aar/app-release.aar`
 | IAMF | libiamf 1.0.0 |
 | LCEVC | liblcevc 0.4.1 |
 | yt-dlp | 2026.03.17 |
-| Python | 3.13.12 |
+| Python | 3.12.3 |
 | libcurl | 8.20.0 |
 | Lua | 5.2.4 |
 | MuJS (JavaScript) | 1.3.9 |

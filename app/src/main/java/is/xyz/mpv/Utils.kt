@@ -315,11 +315,11 @@ object Utils {
 
     val VERSIONS: Versions by lazy {
         Versions(
-            mpv = "%MPV_VERSION%",
-            buildDate = "%DATE%",
-            libPlacebo = "%LIBPLACEBO_VERSION%",
-            ffmpeg = "%FFMPEG_VERSION%",
-            ytDlp = "%YTDLP_VERSION%",
+            mpv = "v0.41.0-698-g74271a7d8",
+            buildDate = "",
+            libPlacebo = "v7.365.0 (v7.360.0-60-gb915882d)",
+            ffmpeg = "239f2c733d",
+            ytDlp = "2026.03.17",
             abiTier = AbiDetector.detectOptimalAbi().displayName,
             vulkanSupport = true,
         )

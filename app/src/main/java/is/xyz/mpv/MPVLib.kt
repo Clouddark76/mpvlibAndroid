@@ -41,19 +41,15 @@ object MPVLib {
 
     // Fallback for apps that don't call loadLibraries() with context
     init {
-        val abi = AbiDetector.detectOptimalAbi()
-        if (abi == AbiDetector.AbiTier.ARM64_V9A) {
-            Log.d(TAG, "v9a device detected. Deferring library loading — MPVLib.loadLibraries(context) MUST be called.")
-        } else {
-            try {
-                // Try standard loading — this works for v8a and when v9a isn't needed
-                val libs = arrayOf("mpv", "player")
-                for (lib in libs) {
-                    System.loadLibrary(lib)
-                }
-            } catch (e: UnsatisfiedLinkError) {
-                Log.d(TAG, "Deferred library loading — call MPVLib.loadLibraries(context)")
+        try {
+            // Try standard loading — this works for v8a and when v9a isn't needed
+            val libs = arrayOf("mpv", "player")
+            for (lib in libs) {
+                System.loadLibrary(lib)
             }
+        } catch (e: UnsatisfiedLinkError) {
+            // Libraries will be loaded by loadLibraries(context) instead
+            Log.d(TAG, "Deferred library loading — call MPVLib.loadLibraries(context) for v9a support")
         }
     }
 

@@ -73,13 +73,13 @@ loadarch () {
 	if [ "$ARM_V9A" -eq 1 ]; then
 		# ARM v9a: SVE2 + enhanced NEON + crypto + I8MM
 		# Tuned for Cortex-X3/X4 (Snapdragon 8 Gen 2/3, Dimensity 9200/9300, Exynos 2400)
-		export CFLAGS="-march=armv9-a+sve2+crypto+i8mm -mtune=cortex-x3 -O3 -ffast-math -fno-math-errno -fomit-frame-pointer -flto=thin"
+		export CFLAGS="-march=armv9-a+sve2+sve2-bitperm+sme+sha3+sm4+lse+dotprod -mtune=cortex-x3 -O3 -flto=thin -ffast-math -fno-math-errno -fomit-frame-pointer"
 		export CXXFLAGS="$CFLAGS"
 		export LDFLAGS="$LDFLAGS -flto=thin -fuse-ld=lld"
 	elif [[ "$ndk_triple" == "aarch64"* ]]; then
 		# ARM v8a base: NEON + CRC + crypto, tuned for Cortex-A76 class cores
 		# This gives 8-10% boost over the default NDK flags
-		export CFLAGS="-march=armv8-a+crypto+crc+simd -mtune=cortex-a76 -O3 -ffast-math -fno-math-errno -fomit-frame-pointer -flto=thin"
+		export CFLAGS="-march=armv8-a+crypto+crc -mtune=cortex-a76 -O3 -flto=thin -ffast-math -fno-math-errno -fomit-frame-pointer"
 		export CXXFLAGS="$CFLAGS"
 		export LDFLAGS="$LDFLAGS -flto=thin -fuse-ld=lld"
 	fi

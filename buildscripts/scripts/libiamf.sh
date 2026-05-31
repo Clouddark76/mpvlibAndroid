@@ -28,6 +28,7 @@ cmake_args=(
 	-DBUILD_SHARED_LIBS=OFF
 	-DBUILD_TESTS=OFF
 	-DBUILD_EXAMPLES=OFF
+	-DIAMF_ENABLE_BINAURALIZER=OFF
 )
 
 # ARM NEON + SVE2 flags
@@ -38,7 +39,7 @@ if [[ "$ndk_triple" == "aarch64"* ]]; then
 	fi
 fi
 
-cmake "${cmake_args[@]}" ..
+cmake "${cmake_args[@]}" ../code
 
 cmake --build . -j"$cores"
 cmake --install .

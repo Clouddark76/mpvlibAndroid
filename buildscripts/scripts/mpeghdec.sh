@@ -33,7 +33,7 @@ cmake_args=(
 
 # ARM NEON for DSP routines (critical for audio decode performance)
 if [[ "$ndk_triple" == "aarch64"* ]]; then
-	local neon_flags="-DHAVE_NEON=1"
+	neon_flags="-DHAVE_NEON=1"
 	if [ "${ARM_V9A:-0}" -eq 1 ]; then
 		neon_flags="$neon_flags -march=armv9-a+sve2+crypto+i8mm"
 	fi

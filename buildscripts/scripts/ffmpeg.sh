@@ -42,8 +42,8 @@ args=(
 
 	# === NEW CODECS (FFmpeg n8.1.1) ===
 
-	# VVC (H.266) — Versatile Video Coding via Fraunhofer vvdec
-	--enable-libvvdec
+	# VVC (H.266) — Versatile Video Coding
+	# (FFmpeg 7.0+ has a native VVC decoder, no external libvvdec flag needed)
 
 	# xHE-AAC / USAC — native FFmpeg decoder (built-in to n8.1.1, no external lib needed)
 	# Samsung APV — native decoder/encoder (built-in to n8.1.1, decoder auto-enabled)
@@ -52,22 +52,11 @@ args=(
 	--enable-libmpeghdec
 
 	# IAMF — Immersive Audio Model and Formats (Alliance for Open Media)
-	--enable-libiamf
+	# (FFmpeg natively supports IAMF, no external libiamf flag needed)
 
-	# === VULKAN ===
-	# Enable Vulkan for compute codecs + video filters
-	# Hardware acceleration on any Vulkan 1.3 device:
-	#   Adreno 600+ (Snapdragon 845+), Mali-G77+ (Dimensity/Exynos), Xclipse (Exynos 2200+)
-	# Vulkan video filters: deinterlace, crossfade, flip, scale
-	--enable-vulkan
 
-	# Vulkan Decoding Accelerators
-	--enable-hwaccel=h264_vulkan
-	--enable-hwaccel=hevc_vulkan
-	--enable-hwaccel=av1_vulkan
-	--enable-hwaccel=vp9_vulkan
 
-	--disable-static --enable-shared --enable-{gpl,version3}
+	--disable-static --enable-shared --enable-{gpl,version3,nonfree}
 
 	# disable unneeded parts
 	--disable-{stripping,doc,programs}

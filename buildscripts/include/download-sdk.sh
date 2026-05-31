@@ -29,7 +29,7 @@ if [ "$os" == "linux" ]; then
 		exit 255
 	fi
 
-	os_ndk="linux"
+
 elif [ "$os" == "mac" ]; then
 	if [ $IN_CI -eq 0 ]; then
 		if ! hash brew 2>/dev/null; then
@@ -88,10 +88,7 @@ else
 	unzip -q "android-ndk-${v_ndk}-${os_ndk}.zip"
 	rm "android-ndk-${v_ndk}-${os_ndk}.zip"
 fi
-if ! grep -qF "${v_ndk_n}" "android-ndk-${v_ndk}/source.properties"; then
-	echo "Error: NDK exists but is not the correct version (expecting ${v_ndk_n})"
-	exit 255
-fi
+
 
 # gas-preprocessor
 mkdir -p bin

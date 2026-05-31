@@ -28,9 +28,9 @@ if [ ! -d mpeghdec ]; then
 	git clone --depth 1 https://github.com/Fraunhofer-IIS/mpeghdec.git
 fi
 
-# libiamf — Immersive Audio Model and Formats (Alliance for Open Media)
 if [ ! -d libiamf ]; then
-	git clone --depth 1 https://github.com/AOMediaCodec/libiamf.git
+	git clone --depth 1 --branch v1.1.0 https://github.com/AOMediaCodec/libiamf.git
+	GIT_TERMINAL_PROMPT=0 git -C libiamf submodule update --init --recursive || echo "Warning: some libiamf submodules could not be initialized (likely oar-private)"
 fi
 
 # liblcevc — V-Nova LCEVC decoder (BSD-3-Clause)

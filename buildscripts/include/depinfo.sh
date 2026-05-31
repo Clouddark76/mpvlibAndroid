@@ -5,7 +5,7 @@
 
 v_sdk=14742923_latest
 v_ndk=r29
-v_ndk_n=29.0.13598950
+v_ndk_n=29.0.14206865
 v_sdk_platform=36
 v_sdk_build_tools=36.0.0
 

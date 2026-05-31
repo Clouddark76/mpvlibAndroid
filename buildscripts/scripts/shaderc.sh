@@ -35,15 +35,15 @@ cp -v libs/*/$abi/libshaderc.a "$prefix_dir/lib/libshaderc_combined.a"
 # The /usr/local references may look redundant but are needed to force pkg-config
 # to emit the sysroot include or lib path at least one (or it wouldn't work).
 mkdir -p "$prefix_dir"/lib/pkgconfig
-cat >"$prefix_dir"/lib/pkgconfig/shaderc.pc <<"END"
-Name: shaderc
+cat >"$prefix_dir"/lib/pkgconfig/shaderc_combined.pc <<"END"
+Name: shaderc_combined
 Description:
 Version: 2022.3-unknown
 Libs: -L/usr/local/lib -lshaderc_combined
 Cflags: -I/usr/local/include
 END
 
-if [ -z "$(pkg-config --cflags shaderc)" ]; then
+if [ -z "$(pkg-config --cflags shaderc_combined)" ]; then
 	echo >&2 "shaderc pkg-config sanity check failed"
 	exit 1
 fi

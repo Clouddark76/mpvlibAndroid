@@ -18,7 +18,7 @@ loadarch () {
 	unset CC CXX CPATH LIBRARY_PATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH
 	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
 
-	local apilvl=26
+	local apilvl=24
 
 	if [ "$1" == "armv7l" ]; then
 		export ndk_suffix=

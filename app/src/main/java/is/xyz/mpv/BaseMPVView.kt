@@ -74,8 +74,7 @@ abstract class BaseMPVView(context: Context, attrs: AttributeSet) : SurfaceView(
         this.filePath = filePath
     }
 
-    private var voInUse: String = "gpu-next"
-    private var hwdecInUse: String = "mediacodec-copy" // Default to "HW"
+    private var voInUse: String = "gpu"
 
     /**
      * Sets the VO to use.
@@ -84,35 +83,6 @@ abstract class BaseMPVView(context: Context, attrs: AttributeSet) : SurfaceView(
     fun setVo(vo: String) {
         voInUse = vo
         MPVLib.setOptionString("vo", vo)
-    }
-
-    /**
-     * Sets the hardware decoding mode.
-     * @param mode "mediacodec" (HW+), "mediacodec-copy" (HW), or "no" (SW)
-     */
-    fun setHwdec(mode: String) {
-        hwdecInUse = mode
-        MPVLib.setOptionString("hwdec", mode)
-    }
-
-    /**
-     * Configures the player for high-performance Vulkan rendering with zero-copy HW+.
-     */
-    fun enableVulkan(enabled: Boolean) {
-        if (enabled) {
-            setVo("gpu-next")
-            MPVLib.setOptionString("gpu-api", "vulkan")
-            MPVLib.setOptionString("gpu-context", "androidvk")
-            // Enable zero-copy interop for HW+ (mediacodec)
-            MPVLib.setOptionString("vd-lavc-dr", "yes")
-            // Optimal Vulkan settings for Android
-            MPVLib.setOptionString("vulkan-async-compute", "yes")
-            MPVLib.setOptionString("vulkan-async-transfer", "yes")
-            MPVLib.setOptionString("vulkan-queue-count", "1") // 1 is safest for mobile drivers
-        } else {
-            setVo("gpu")
-            MPVLib.setOptionString("gpu-api", "opengl")
-        }
     }
 
     // Surface callbacks

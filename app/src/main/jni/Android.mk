@@ -1,16 +1,20 @@
 LOCAL_PATH:= $(call my-dir)
 
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-PREFIX = $(PREFIX32)
-endif
+# 32-bit ARM (armeabi-v7a) has been dropped — arm64-v8a only
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 PREFIX = $(PREFIX64)
+PREFIX_V9A = $(PREFIX64_V9A)
 endif
 ifeq ($(TARGET_ARCH_ABI),x86_64)
 PREFIX = $(PREFIX_X64)
 endif
 ifeq ($(TARGET_ARCH_ABI),x86)
 PREFIX = $(PREFIX_X86)
+endif
+
+# Log v9a status
+ifneq ($(PREFIX_V9A),)
+$(info ARM v9a optimized libraries detected at $(PREFIX_V9A))
 endif
 
 include $(CLEAR_VARS)
@@ -67,7 +71,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := libplayer
 LOCAL_CFLAGS    := -Werror
-LOCAL_CPPFLAGS  += -std=c++11
+LOCAL_CPPFLAGS  += -std=c++17
 LOCAL_SRC_FILES := \
 	main.cpp \
 	render.cpp \
@@ -76,8 +80,10 @@ LOCAL_SRC_FILES := \
 	property.cpp \
 	event.cpp \
 	node.cpp \
-	thumbnail.cpp
-LOCAL_LDLIBS    := -llog -lGLESv3 -lEGL -latomic
+	thumbnail.cpp \
+	abi_detect.cpp
+# Added -lvulkan for Vulkan compute codec & filter support
+LOCAL_LDLIBS    := -llog -lGLESv3 -lEGL -latomic -lvulkan
 LOCAL_SHARED_LIBRARIES := swscale avcodec avformat avutil mpv
 
 include $(BUILD_SHARED_LIBRARY)

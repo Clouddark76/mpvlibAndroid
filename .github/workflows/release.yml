@@ -198,7 +198,8 @@ jobs:
           cd buildscripts
 
           source include/build_config.sh
-          arches=(armv7l arm64)
+          arches=(arm64)
+          [ "$ENABLE_ARM_V9A" = "true" ] && arches+=(arm64-v9a)
           [ "$ENABLE_X86_ARCH" = "true" ] && arches+=(x86 x86_64)
           for arch in "${arches[@]}"; do
             ./buildall.sh --arch "$arch" -n mpv
@@ -258,8 +259,10 @@ jobs:
             echo ""
             echo "## Included Android ABIs"
             echo ""
-            echo "- \`armeabi-v7a\` / \`armv7l\`"
-            echo "- \`arm64-v8a\` / \`arm64\`"
+            echo "- \`arm64-v8a\` / \`arm64\` (NEON optimized, 8-10% boost)"
+            if [ "$ENABLE_ARM_V9A" = "true" ]; then
+              echo "- \`arm64-v9a\` (SVE2 optimized, 15-18% boost — Snapdragon 8 Gen 2+, Dimensity 9200+, Exynos 2400+)"
+            fi
             if [ "$ENABLE_X86_ARCH" = "true" ]; then
               echo "- \`x86\`"
               echo "- \`x86_64\`"

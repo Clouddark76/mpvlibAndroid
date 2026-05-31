@@ -18,7 +18,34 @@ fi
 # dav1d (canonical repo, GitHub is read-only mirror)
 [ ! -d dav1d ] && git clone https://github.com/videolan/dav1d
 
-# ffmpeg
+# vvdec — Fraunhofer VVC (H.266) decoder
+if [ ! -d vvdec ]; then
+	git clone --depth 1 --branch v$v_vvdec https://github.com/fraunhoferhhi/vvdec.git
+fi
+
+# mpeghdec — Fraunhofer MPEG-H 3D Audio decoder
+if [ ! -d mpeghdec ]; then
+	git clone --depth 1 https://github.com/Fraunhofer-IIS/mpeghdec.git
+fi
+
+# libiamf — Immersive Audio Model and Formats (Alliance for Open Media)
+if [ ! -d libiamf ]; then
+	git clone --depth 1 https://github.com/AOMediaCodec/libiamf.git
+fi
+
+# liblcevc — V-Nova LCEVC decoder (BSD-3-Clause)
+# Optional: falls back to FFmpeg native LCEVC metadata passthrough if unavailable
+if [ ! -d liblcevc ]; then
+	if git clone --depth 1 --branch v$v_liblcevc https://github.com/v-novaltd/LCEVCdec.git liblcevc 2>/dev/null; then
+		echo "LCEVCdec source downloaded successfully"
+	else
+		echo "Warning: LCEVCdec source not available, will use FFmpeg native LCEVC passthrough"
+		mkdir -p liblcevc
+		echo "LCEVCdec not available - FFmpeg native LCEVC passthrough will be used" > liblcevc/README
+	fi
+fi
+
+# ffmpeg — pinned to n8.1.1
 if [ ! -d ffmpeg ]; then
 	git clone https://github.com/FFmpeg/FFmpeg ffmpeg
 	[ $IN_CI -eq 1 ] && git -C ffmpeg checkout $v_ci_ffmpeg

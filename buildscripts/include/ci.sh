@@ -6,7 +6,11 @@ cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 . ./include/depinfo.sh
 . ./include/build_config.sh
 
-build_arches=(armv7l arm64)
+# 32-bit ARM dropped — arm64 is the default
+build_arches=(arm64)
+if [ "$ENABLE_ARM_V9A" = "true" ]; then
+    build_arches+=(arm64-v9a)
+fi
 if [ "$ENABLE_X86_ARCH" = "true" ]; then
     build_arches+=(x86 x86_64)
 fi
@@ -57,8 +61,6 @@ setup_ccache_wrappers() {
 	ccache_bin=$(command -v ccache)
 	local compiler
 	local compilers=(
-		armv7a-linux-androideabi24-clang
-		armv7a-linux-androideabi24-clang++
 		aarch64-linux-android24-clang
 		aarch64-linux-android24-clang++
 	)
@@ -96,6 +98,10 @@ compress_prefix() {
 		[ -d "$dir" ] || continue
 		asset_paths+=("${dir#../}")
 	done
+	# Also include v9a native assets
+	if [ -d "../app/src/main/assets/native-v9a" ]; then
+		asset_paths+=("app/src/main/assets/native-v9a")
+	fi
 
 	if [ ${#asset_paths[@]} -eq 0 ]; then
 		echo "No Python assets were generated for cache"
@@ -120,8 +126,11 @@ build_prefix() {
 			./buildall.sh --arch "$arch" "$x"
 		done
 
-		msg "Building Python runtime for $arch"
-		./buildall.sh --arch "$arch" python
+		# v9a shares python with arm64 — only build once
+		if [ "$arch" != "arm64-v9a" ]; then
+			msg "Building Python runtime for $arch"
+			./buildall.sh --arch "$arch" python
+		fi
 	done
 
 	compress_prefix

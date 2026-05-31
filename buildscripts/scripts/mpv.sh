@@ -14,11 +14,12 @@ else
 fi
 
 # Android provides Vulkan, but no pkgconfig file.
+# Updated to Vulkan 1.3.290 for compute codec + filter support
 mkdir -p "$prefix_dir"/lib/pkgconfig
 cat >"$prefix_dir"/lib/pkgconfig/vulkan.pc <<END
 Name: Vulkan
-Description:
-Version: 1.3.275
+Description: Vulkan 1.3 (Android system library)
+Version: 1.3.290
 Libs: -lvulkan
 Cflags:
 END
@@ -57,6 +58,7 @@ meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
 	-Dlibcurl=enabled \
 	-Djavascript=enabled \
 	-Dvulkan=enabled \
+	-Dvulkan-interop=enabled \
 	-Dlibmpv=true \
 	-Dcplayer=false \
 	-Dmanpage-build=disabled

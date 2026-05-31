@@ -3,11 +3,12 @@
 . buildscripts/include/depinfo.sh
 
 case "$1" in
-	"") prefix_name=armv7l ;;
+	"") prefix_name=arm64 ;;
 	-arm64) prefix_name=arm64 ;;
+	-arm64v9a) prefix_name=arm64-v9a ;;
 	-x86) prefix_name=x86 ;;
 	-x64) prefix_name=x86_64 ;;
-	*) prefix_name=armv7l ;;
+	*) prefix_name=arm64 ;;
 esac
 
 MPV_VERSION=$(grep "#define VERSION" "buildscripts/deps/mpv/_build$1/common/version.h" | cut -d '"' -f 2)

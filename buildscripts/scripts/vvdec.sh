@@ -42,6 +42,11 @@ if [ "${ARM_V9A:-0}" -eq 1 ]; then
 	cmake_args+=(-DCMAKE_CXX_FLAGS="-march=armv9-a+sve2+crypto+i8mm")
 fi
 
+# Fix broken SIMDe byte-swap on GitHub Actions / Ubuntu
+if [ -f "../source/Lib/CommonLib/BitStream.h" ]; then
+	sed -i 's/simde_bswap64/__builtin_bswap64/g' "../source/Lib/CommonLib/BitStream.h"
+fi
+
 cmake "${cmake_args[@]}" ..
 
 cmake --build . -j"$cores"

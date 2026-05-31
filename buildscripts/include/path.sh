@@ -5,7 +5,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 . "$DIR/include/depinfo.sh"
 
 os=linux
-[[ "$OSTYPE" == "darwin"* ]] && os=mac
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	os=mac
+elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+	os=win
+fi
 export os
 
 if [ "$os" == "mac" ]; then

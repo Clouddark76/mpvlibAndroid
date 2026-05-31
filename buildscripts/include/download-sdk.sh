@@ -44,6 +44,11 @@ elif [ "$os" == "mac" ]; then
 		echo "Error: missing Java Development Kit. Install it manually."
 		exit 255
 	fi
+elif [ "$os" == "win" ]; then
+	if ! javac -version &>/dev/null; then
+		echo "Error: missing Java Development Kit. Install it manually."
+		exit 255
+	fi
 fi
 
 mkdir -p sdk && cd sdk
@@ -58,7 +63,9 @@ if [ ! -d "android-sdk-${os}" ]; then
 fi
 sdkmanager () {
 	local exe="./android-sdk-$os/cmdline-tools/latest/bin/sdkmanager"
-	[ -x "$exe" ] || exe="./android-sdk-$os/cmdline-tools/bin/sdkmanager"
+	[ -f "${exe}.bat" ] && exe="${exe}.bat"
+	[ -f "$exe" ] || [ -x "$exe" ] || exe="./android-sdk-$os/cmdline-tools/bin/sdkmanager"
+	[ -f "${exe}.bat" ] && exe="${exe}.bat"
 	"$exe" --sdk_root="${ANDROID_HOME}" "$@"
 }
 echo y | sdkmanager \

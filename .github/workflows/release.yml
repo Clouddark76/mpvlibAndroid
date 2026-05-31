@@ -164,11 +164,11 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade meson jinja2 jsonschema
 
-      - name: Download and restore native dependencies
+      - name: Download and extract source dependencies
         run: |
           set -euxo pipefail
-          mkdir -p "$CACHE_FOLDER"
-          buildscripts/include/ci.sh install
+          cd buildscripts
+          ./download.sh
 
       - name: Save Android SDK cache
         if: steps.android-sdk-cache.outputs.cache-hit != 'true'
@@ -202,10 +202,10 @@ jobs:
           [ "$ENABLE_ARM_V9A" = "true" ] && arches+=(arm64-v9a)
           [ "$ENABLE_X86_ARCH" = "true" ] && arches+=(x86 x86_64)
           for arch in "${arches[@]}"; do
-            ./buildall.sh --arch "$arch" -n mpv
+            ./buildall.sh --arch "$arch" mpv
           done
 
-          ./buildall.sh -n mpv-android
+          ./buildall.sh --clean mpv-android
 
       - name: Show ccache stats after build
         if: always()

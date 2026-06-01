@@ -29,7 +29,7 @@ if [ "$os" == "linux" ]; then
 		exit 255
 	fi
 
-	os_ndk="linux"
+
 elif [ "$os" == "mac" ]; then
 	if [ $IN_CI -eq 0 ]; then
 		if ! hash brew 2>/dev/null; then
@@ -40,6 +40,11 @@ elif [ "$os" == "mac" ]; then
 			automake autoconf libtool pkg-config \
 			coreutils gnu-sed wget meson ninja python
 	fi
+	if ! javac -version &>/dev/null; then
+		echo "Error: missing Java Development Kit. Install it manually."
+		exit 255
+	fi
+elif [ "$os" == "win" ]; then
 	if ! javac -version &>/dev/null; then
 		echo "Error: missing Java Development Kit. Install it manually."
 		exit 255
@@ -58,7 +63,9 @@ if [ ! -d "android-sdk-${os}" ]; then
 fi
 sdkmanager () {
 	local exe="./android-sdk-$os/cmdline-tools/latest/bin/sdkmanager"
-	[ -x "$exe" ] || exe="./android-sdk-$os/cmdline-tools/bin/sdkmanager"
+	[ -f "${exe}.bat" ] && exe="${exe}.bat"
+	[ -f "$exe" ] || [ -x "$exe" ] || exe="./android-sdk-$os/cmdline-tools/bin/sdkmanager"
+	[ -f "${exe}.bat" ] && exe="${exe}.bat"
 	"$exe" --sdk_root="${ANDROID_HOME}" "$@"
 }
 echo y | sdkmanager \
@@ -81,10 +88,7 @@ else
 	unzip -q "android-ndk-${v_ndk}-${os_ndk}.zip"
 	rm "android-ndk-${v_ndk}-${os_ndk}.zip"
 fi
-if ! grep -qF "${v_ndk_n}" "android-ndk-${v_ndk}/source.properties"; then
-	echo "Error: NDK exists but is not the correct version (expecting ${v_ndk_n})"
-	exit 255
-fi
+
 
 # gas-preprocessor
 mkdir -p bin

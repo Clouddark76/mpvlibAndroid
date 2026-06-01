@@ -6,11 +6,13 @@ MPV_ANDROID="$DIR/../.."
 
 . $BUILD/include/path.sh
 . $BUILD/include/depinfo.sh
+. $BUILD/include/build_config.sh
 
 if [ "$1" == "build" ]; then
 	true
 elif [ "$1" == "clean" ]; then
 	rm -rf $MPV_ANDROID/{app,.}/build $MPV_ANDROID/app/src/main/{libs,obj}
+	rm -rf $MPV_ANDROID/app/src/main/assets/native-v9a
 	exit 0
 else
 	exit 255
@@ -28,8 +30,8 @@ nativeprefix () {
 
 pythonassetdir () {
 	case "$1" in
-		armv7l) echo "$MPV_ANDROID/app/src/main/assets/py.armeabi-v7a" ;;
 		arm64) echo "$MPV_ANDROID/app/src/main/assets/py.arm64-v8a" ;;
+		arm64-v9a) echo "$MPV_ANDROID/app/src/main/assets/py.arm64-v8a" ;; # v9a shares arm64 python
 		x86) echo "$MPV_ANDROID/app/src/main/assets/py.x86" ;;
 		x86_64) echo "$MPV_ANDROID/app/src/main/assets/py.x86_64" ;;
 		*) return 1 ;;
@@ -51,18 +53,18 @@ check_python_assets () {
 	fi
 }
 
-prefix32=$(nativeprefix "armv7l")
 prefix64=$(nativeprefix "arm64")
+prefix64_v9a=$(nativeprefix "arm64-v9a")
 prefix_x64=$(nativeprefix "x86_64")
 prefix_x86=$(nativeprefix "x86")
 
-if [[ -z "$prefix32" && -z "$prefix64" && -z "$prefix_x64" && -z "$prefix_x86" ]]; then
+if [[ -z "$prefix64" && -z "$prefix64_v9a" && -z "$prefix_x64" && -z "$prefix_x86" ]]; then
 	echo >&2 "Error: no mpv library detected."
 	exit 255
 fi
 
-[ -n "$prefix32" ] && check_python_assets "armv7l"
 [ -n "$prefix64" ] && check_python_assets "arm64"
+# v9a doesn't need separate python assets — shares with arm64
 [ -n "$prefix_x64" ] && check_python_assets "x86_64"
 [ -n "$prefix_x86" ] && check_python_assets "x86"
 
@@ -70,8 +72,41 @@ fi
 
 bash "$BUILD/scripts/write_versions.sh" $ndk_suffix
 
-PREFIX32=$prefix32 PREFIX64=$prefix64 PREFIX_X64=$prefix_x64 PREFIX_X86=$prefix_x86 \
+PREFIX64=$prefix64 PREFIX64_V9A=$prefix64_v9a PREFIX_X64=$prefix_x64 PREFIX_X86=$prefix_x86 \
 ndk-build -C app/src/main -j$cores
+
+# === ARM v9a optimized libraries — ship as assets for runtime loading ===
+if [ -n "$prefix64_v9a" ]; then
+	echo "Packaging ARM v9a optimized libraries into assets..."
+	v9a_asset_dir="$MPV_ANDROID/app/src/main/assets/native-v9a"
+	mkdir -p "$v9a_asset_dir"
+
+	# Copy all shared libraries from v9a prefix to assets
+	for so in "$prefix64_v9a"/lib/lib*.so; do
+		[ -f "$so" ] || continue
+		local_name=$(basename "$so")
+		# Strip version suffixes (e.g., libavcodec.so.61 -> libavcodec.so)
+		# We need the unversioned .so for System.load()
+		base_name="${local_name%%.*}.so"
+		if [ -L "$so" ]; then
+			# Follow symlinks to get the actual library
+			real_so=$(readlink -f "$so")
+			cp -v "$real_so" "$v9a_asset_dir/$base_name"
+		else
+			cp -v "$so" "$v9a_asset_dir/$base_name"
+		fi
+	done
+
+	# Also copy libplayer.so from the ndk-build output if v9a was built
+	# This requires a separate ndk-build with v9a prefix
+	if [ -f "$MPV_ANDROID/app/src/main/obj/local/arm64-v8a/libplayer.so" ]; then
+		# Rebuild libplayer with v9a libs for full v9a chain
+		echo "Note: libplayer.so in assets uses base v8a build (JNI wrapper, minimal perf impact)"
+	fi
+
+	echo "ARM v9a libraries packaged at: $v9a_asset_dir"
+	ls -lh "$v9a_asset_dir/"
+fi
 
 targets=(assembleDebug)
 if [ -z "$DONT_BUILD_RELEASE" ]; then

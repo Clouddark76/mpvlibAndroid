@@ -19,8 +19,18 @@ cpu=armv7-a
 [[ "$ndk_triple" == "x86_64"* ]] && cpu=generic
 [[ "$ndk_triple" == "i686"* ]] && cpu="i686 --disable-asm"
 
+# Override CPU for v9a optimized builds
+if [ "${ARM_V9A:-0}" -eq 1 ]; then
+	cpu=armv9-a
+fi
+
 cpuflags=
-[[ "$ndk_triple" == "arm"* ]] && cpuflags="$cpuflags -mfpu=neon -mcpu=cortex-a8"
+# ARM NEON intrinsics — always enabled for arm64
+[[ "$ndk_triple" == "aarch64"* ]] && cpuflags="$cpuflags -DHAVE_NEON=1"
+# v9a: explicit SVE2 instruction set
+if [ "${ARM_V9A:-0}" -eq 1 ]; then
+	cpuflags="$cpuflags -march=armv9-a+sve2+crypto+i8mm"
+fi
 
 args=(
 	--target-os=android --enable-cross-compile
@@ -28,20 +38,50 @@ args=(
 	--arch=${ndk_triple%%-*} --cpu=$cpu
 	--extra-cflags="-I$prefix_dir/include $cpuflags" --extra-ldflags="-L$prefix_dir/lib"
 
-	--enable-{jni,mediacodec,mbedtls,libdav1d} --disable-vulkan
-	--disable-static --enable-shared --enable-{gpl,version3}
+	--enable-{jni,mediacodec,mbedtls,libdav1d}
+
+	# === NEW CODECS (FFmpeg n8.1.1) ===
+
+	# VVC (H.266) — Versatile Video Coding
+	# (FFmpeg 7.0+ has a native VVC decoder, no external libvvdec flag needed)
+
+	# xHE-AAC / USAC — native FFmpeg decoder (built-in to n8.1.1, no external lib needed)
+	# Samsung APV — native decoder/encoder (built-in to n8.1.1, decoder auto-enabled)
+
+	# MPEG-H 3D Audio — Fraunhofer decoder (immersive/object-based 3D audio, ATSC 3.0)
+	--enable-libmpeghdec
+
+	# IAMF — Immersive Audio Model and Formats (Alliance for Open Media)
+	# (FFmpeg natively supports IAMF, no external libiamf flag needed)
+
+
+
+	--disable-static --enable-shared --enable-{gpl,version3,nonfree}
 
 	# disable unneeded parts
 	--disable-{stripping,doc,programs}
-	# to keep the build lean we disable some feature quite aggressively:
+	# to keep the build lean we disable some features aggressively:
 	# - muxers, encoders: mpv-android does not have any way to use these
 	# - devices: no practical use on Android
 	--disable-{muxers,encoders,devices}
-	# useful to taking screenshots
+	# useful for taking screenshots
 	--enable-encoder=mjpeg,png
 	# useful for the `dump-cache` command
 	--enable-muxer=mov,matroska,mpegts
+
+	# ARM NEON intrinsics optimizations (auto-enabled on arm64 but explicit is safer)
+	--enable-neon
 )
+
+# LCEVC enhancement layer — try V-Nova's decoder, fall back to native metadata passthrough
+if [ ! -f "$prefix_dir/.liblcevc_unavailable" ]; then
+	args+=(--enable-liblcevc-dec)
+	echo "LCEVC: Using V-Nova liblcevc_dec"
+else
+	# FFmpeg n8.1.1 has native LCEVC metadata parsing even without the external library
+	echo "LCEVC: Using FFmpeg native metadata passthrough (liblcevc_dec unavailable)"
+fi
+
 ../configure "${args[@]}"
 
 make -j$cores

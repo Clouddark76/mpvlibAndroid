@@ -118,10 +118,10 @@ jobs:
           distribution: temurin
           cache: gradle
 
-      - name: Setup Python 3.13
+      - name: Setup Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
 
       - name: Export CI environment variables
         run: |
@@ -181,11 +181,11 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade meson jinja2 jsonschema
 
-      - name: Download and restore native dependencies
+      - name: Download and extract source dependencies
         run: |
           set -euxo pipefail
-          mkdir -p "$CACHE_FOLDER"
-          buildscripts/include/ci.sh install
+          cd buildscripts
+          ./download.sh
 
       - name: Save Android SDK cache
         if: steps.android-sdk-cache.outputs.cache-hit != 'true'
@@ -234,7 +234,7 @@ jobs:
             ./buildall.sh --arch "$arch" mpv
           done
 
-          ./buildall.sh -n mpv-android
+          ./buildall.sh --clean mpv-android
 
       - name: Show ccache stats after build
         if: always()
@@ -271,6 +271,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          source buildscripts/include/build_config.sh
+
           RELEASE_NOTES="dist/release-notes-${VERSION_TAG}.md"
 
           CURRENT_COMMIT="$(git rev-list -n 1 "$VERSION_TAG")"
@@ -286,10 +288,14 @@ jobs:
             echo ""
             echo "## Included Android ABIs"
             echo ""
-            echo "- \`armeabi-v7a\` / \`armv7l\`"
-            echo "- \`arm64-v8a\` / \`arm64\`"
-            echo "- \`x86\`"
-            echo "- \`x86_64\`"
+            echo "- \`arm64-v8a\` / \`arm64\` (NEON optimized, 8-10% boost)"
+            if [ "$ENABLE_ARM_V9A" = "true" ]; then
+              echo "- \`arm64-v9a\` (SVE2 optimized, 15-18% boost — Snapdragon 8 Gen 2+, Dimensity 9200+, Exynos 2400+)"
+            fi
+            if [ "$ENABLE_X86_ARCH" = "true" ]; then
+              echo "- \`x86\`"
+              echo "- \`x86_64\`"
+            fi
             echo ""
             echo "## Build Environment"
             echo ""

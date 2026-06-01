@@ -60,7 +60,7 @@ prefix64_v9a=$(nativeprefix "arm64-v9a")
 prefix_x64=$(nativeprefix "x86_64")
 prefix_x86=$(nativeprefix "x86")
 
-ifif [[ -z "$prefix32" && -z "$prefix64" && -z "$prefix64_v9a" && -z "$prefix_x64" && -z "$prefix_x86" ]]; then
+if [[ -z "$prefix32" && -z "$prefix64" && -z "$prefix64_v9a" && -z "$prefix_x64" && -z "$prefix_x86" ]]; then
 	echo >&2 "Error: no mpv library detected."
 	exit 255
 fi

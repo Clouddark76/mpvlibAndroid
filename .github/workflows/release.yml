@@ -231,13 +231,23 @@ jobs:
           cd buildscripts
 
           source include/build_config.sh
+
           arches=(arm64)
+
           [ "$ENABLE_ARM_V9A" = "true" ] && arches+=(arm64-v9a)
           [ "$ENABLE_X86_ARCH" = "true" ] && arches+=(x86 x86_64)
+
+          # Build Python runtimes first
           for arch in "${arches[@]}"; do
-            ./buildall.sh --arch "$arch" mpv
+              ./buildall.sh --arch "$arch" python
           done
 
+          # Build mpv
+          for arch in "${arches[@]}"; do
+              ./buildall.sh --arch "$arch" mpv
+          done
+
+          # Package AAR
           ./buildall.sh --clean mpv-android
 
       - name: Show ccache stats after build

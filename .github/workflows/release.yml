@@ -232,22 +232,30 @@ jobs:
 
           source include/build_config.sh
 
-          arches=(arm64)
+          # ARM32 + ARM64
+          arches=(armv7l arm64)
 
+          # ARMv9 comparte Python con arm64
           [ "$ENABLE_ARM_V9A" = "true" ] && arches+=(arm64-v9a)
+
+          # x86 opcionales
           [ "$ENABLE_X86_ARCH" = "true" ] && arches+=(x86 x86_64)
 
-          # Build Python runtimes first
+          # Build Python runtimes
           for arch in "${arches[@]}"; do
-              ./buildall.sh --arch "$arch" python
+              if [ "$arch" != "arm64-v9a" ]; then
+                  echo "Building Python runtime for $arch"
+                  ./buildall.sh --arch "$arch" python
+              fi
           done
 
-          # Build mpv
+          # Build mpv libraries
           for arch in "${arches[@]}"; do
+              echo "Building mpv for $arch"
               ./buildall.sh --arch "$arch" mpv
           done
 
-          # Package AAR
+          # Package final AAR
           ./buildall.sh --clean mpv-android
 
       - name: Show ccache stats after build
@@ -302,6 +310,7 @@ jobs:
             echo ""
             echo "## Included Android ABIs"
             echo ""
+            echo "- \`armeabi-v7a\` / \`armv7l\`"
             echo "- \`arm64-v8a\` / \`arm64\` (NEON optimized, 8-10% boost)"
             if [ "$ENABLE_ARM_V9A" = "true" ]; then
               echo "- \`arm64-v9a\` (SVE2 optimized, 15-18% boost — Snapdragon 8 Gen 2+, Dimensity 9200+, Exynos 2400+)"

@@ -7,7 +7,7 @@ cleanbuild=0
 nodeps=0
 clang=1
 target=mpv-android
-arch=arm64
+arch=armv7l
 
 getdeps () {
 	varname="dep_${1//-/_}[*]"
@@ -20,7 +20,13 @@ loadarch () {
 
 	local apilvl=24
 
-	if [ "$1" == "arm64" ]; then
+	if [ "$1" == "armv7l" ]; then
+		export ndk_suffix=
+		export ndk_triple=arm-linux-androideabi
+		export android_abi=armeabi-v7a
+		cc_triple=armv7a-linux-androideabi$apilvl
+		prefix_name=armv7l
+	elif [ "$1" == "arm64" ]; then
 		export ndk_suffix=-arm64
 		export ndk_triple=aarch64-linux-android
 		export android_abi=arm64-v8a
@@ -173,7 +179,7 @@ usage () {
 		"-n             Do not build dependencies" \
 		"--clean        Clean build dirs before compiling" \
 		"--gcc          Use gcc compiler (unsupported!)" \
-		"--arch <arch>  Build for specified architecture (default: $arch; supported: arm64, arm64-v9a, x86, x86_64)"
+		"--arch <arch>  Build for specified architecture (default: $arch; supported: armv7l, arm64, arm64-v9a, x86, x86_64)"
 	exit 0
 }
 

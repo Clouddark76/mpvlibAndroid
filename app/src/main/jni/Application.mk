@@ -1,5 +1,7 @@
 APP_ABI :=
-# 32-bit ARM (armeabi-v7a) has been dropped
+ifneq ($(PREFIX32),)
+APP_ABI += armeabi-v7a
+endif
 ifneq ($(PREFIX64),)
 APP_ABI += arm64-v8a
 endif

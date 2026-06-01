@@ -1,6 +1,8 @@
 LOCAL_PATH:= $(call my-dir)
 
-# 32-bit ARM (armeabi-v7a) has been dropped — arm64-v8a only
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+PREFIX = $(PREFIX32)
+endif
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 PREFIX = $(PREFIX64)
 PREFIX_V9A = $(PREFIX64_V9A)

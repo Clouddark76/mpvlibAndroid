@@ -267,17 +267,29 @@ object Utils {
             "mpc", "mpga", "mpp", "oga", "ogg", "opus", "pcm", "ra", "ram", "rax", "shn", "snd",
             "spx", "tak", "thd", "thd+ac3", "true-hd", "truehd", "tta", "wav", "weba", "wma", "wv",
             "wvp",
+            /* xHE-AAC / USAC (streaming sites) */
+            "xhe", "usac",
+            /* MPEG-H 3D Audio */
+            "mha", "mhm",
+            /* IAMF — Immersive Audio Model and Formats */
+            "iamf",
 
             /* Video / Container */
-            "264", "265", "3g2", "3ga", "3gp", "3gp2", "3gpp", "3gpp2", "3iv", "amr", "asf",
+            "264", "265", "266",
+            "3g2", "3ga", "3gp", "3gp2", "3gpp", "3gpp2", "3iv", "amr", "asf",
             "asx", "av1", "avc", "avf", "avi", "bdm", "bdmv", "clpi", "cpi", "divx", "dv", "evo",
-            "evob", "f4v", "flc", "fli", "flic", "flv", "gxf", "h264", "h265", "hdmov", "hdv",
+            "evob", "f4v", "flc", "fli", "flic", "flv", "gxf", "h264", "h265", "h266", "hdmov", "hdv",
             "hevc", "lrv", "m1u", "m1v", "m2t", "m2ts", "m2v", "m4u", "m4v", "mkv", "mod", "moov",
             "mov", "mp2", "mp2v", "mp4", "mp4v", "mpe", "mpeg", "mpeg2", "mpeg4", "mpg", "mpg4",
             "mpl", "mpls", "mpv", "mpv2", "mts", "mtv", "mxf", "mxu", "nsv", "nut", "ogg", "ogm",
             "ogv", "ogx", "qt", "qtvr", "rm", "rmj", "rmm", "rms", "rmvb", "rmx", "rv", "rvx",
-            "sdp", "tod", "trp", "ts", "tsa", "tsv", "tts", "vc1", "vfw", "vob", "vro", "webm",
+            "sdp", "tod", "trp", "ts", "tsa", "tsv", "tts", "vc1", "vfw", "vob", "vro",
+            /* VVC (H.266) — Versatile Video Coding */
+            "vvc",
+            "webm",
             "wm", "wmv", "wmx", "x264", "x265", "xvid", "y4m", "yuv",
+            /* Samsung APV — Advanced Professional Video */
+            "apv",
 
             /* Picture */
             "apng", "bmp", "exr", "gif", "j2c", "j2k", "jfif", "jp2", "jpc", "jpe", "jpeg", "jpg",
@@ -287,7 +299,8 @@ object Utils {
     // cf. AndroidManifest.xml and MPVActivity.resolveUri()
     val PROTOCOLS = setOf(
         "file", "content", "http", "https", "data",
-        "rtmp", "rtmps", "rtp", "rtsp", "mms", "mmst", "mmsh", "tcp", "udp", "lavf"
+        "rtmp", "rtmps", "rtp", "rtsp", "mms", "mmst", "mmsh", "tcp", "udp", "lavf",
+        "srt", "srtp"
     )
 
     data class Versions(
@@ -296,13 +309,19 @@ object Utils {
         val libPlacebo: String,
         val ffmpeg: String,
         val ytDlp: String,
+        val abiTier: String,
+        val vulkanSupport: Boolean,
     )
 
-    val VERSIONS = Versions(
-        mpv = "%MPV_VERSION%",
-        buildDate = "%DATE%",
-        libPlacebo = "%LIBPLACEBO_VERSION%",
-        ffmpeg = "%FFMPEG_VERSION%",
-        ytDlp = "%YTDLP_VERSION%",
-    )
+    val VERSIONS: Versions by lazy {
+        Versions(
+            mpv = "v0.41.0-698-g74271a7d8",
+            buildDate = "",
+            libPlacebo = "v7.365.0 (v7.360.0-60-gb915882d)",
+            ffmpeg = "239f2c733d",
+            ytDlp = "2026.03.17",
+            abiTier = AbiDetector.detectOptimalAbi().displayName,
+            vulkanSupport = true,
+        )
+    }
 }

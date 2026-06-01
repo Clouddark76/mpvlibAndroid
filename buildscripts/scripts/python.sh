@@ -62,6 +62,17 @@ MODULE_BUILDTYPE=static \
 ../configure --host=$ndk_triple --build=${ndk_triple%%-*} \
 	--enable-ipv6 --disable-shared --without-ensurepip \
 	--disable-test-modules --with-build-python
+
+cat >> Modules/Setup.local <<EOF
+*disabled*
+grp
+mmap
+syslog
+nis
+spwd
+_crypt
+EOF
+
 make -j$cores
 
 rm -rf dest
@@ -70,8 +81,13 @@ inst=$PWD/dest/usr/local
 
 rm -f "$out"/python*
 
-cp -v python "$out/python3"
-llvm-strip -s "$out/python3"
+if [ -f python.exe ]; then
+	cp -v python.exe "$out/python3"
+	llvm-strip -s "$out/python3"
+else
+	cp -v python "$out/python3"
+	llvm-strip -s "$out/python3"
+fi
 
 # Verify that python installation directory exists and contains correct python structure
 target_lib_dir="$inst/lib/python${v_python:0:4}"

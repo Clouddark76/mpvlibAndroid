@@ -5,7 +5,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 . "$DIR/include/depinfo.sh"
 
 os=linux
-[[ "$OSTYPE" == "darwin"* ]] && os=mac
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	os=mac
+elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+	os=win
+fi
 export os
 
 if [ "$os" == "mac" ]; then
@@ -21,7 +25,7 @@ cores=${cores:-4}
 # configure pkg-config paths if inside buildscripts
 if [ -n "$ndk_triple" ]; then
 	export PKG_CONFIG_SYSROOT_DIR="$prefix_dir"
-	export PKG_CONFIG_LIBDIR="$PKG_CONFIG_SYSROOT_DIR/lib/pkgconfig"
+	export PKG_CONFIG_LIBDIR="$PKG_CONFIG_SYSROOT_DIR/lib/pkgconfig:$PKG_CONFIG_SYSROOT_DIR/share/pkgconfig"
 	unset PKG_CONFIG_PATH
 fi
 

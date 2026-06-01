@@ -30,6 +30,7 @@ nativeprefix () {
 
 pythonassetdir () {
 	case "$1" in
+		armv7l) echo "$MPV_ANDROID/app/src/main/assets/py.armeabi-v7a" ;;
 		arm64) echo "$MPV_ANDROID/app/src/main/assets/py.arm64-v8a" ;;
 		arm64-v9a) echo "$MPV_ANDROID/app/src/main/assets/py.arm64-v8a" ;; # v9a shares arm64 python
 		x86) echo "$MPV_ANDROID/app/src/main/assets/py.x86" ;;
@@ -53,16 +54,18 @@ check_python_assets () {
 	fi
 }
 
+prefix32=$(nativeprefix "armv7l")
 prefix64=$(nativeprefix "arm64")
 prefix64_v9a=$(nativeprefix "arm64-v9a")
 prefix_x64=$(nativeprefix "x86_64")
 prefix_x86=$(nativeprefix "x86")
 
-if [[ -z "$prefix64" && -z "$prefix64_v9a" && -z "$prefix_x64" && -z "$prefix_x86" ]]; then
+ifif [[ -z "$prefix32" && -z "$prefix64" && -z "$prefix64_v9a" && -z "$prefix_x64" && -z "$prefix_x86" ]]; then
 	echo >&2 "Error: no mpv library detected."
 	exit 255
 fi
 
+[ -n "$prefix32" ] && check_python_assets "armv7l"
 [ -n "$prefix64" ] && check_python_assets "arm64"
 # v9a doesn't need separate python assets — shares with arm64
 [ -n "$prefix_x64" ] && check_python_assets "x86_64"
@@ -72,7 +75,7 @@ fi
 
 bash "$BUILD/scripts/write_versions.sh" $ndk_suffix
 
-PREFIX64=$prefix64 PREFIX64_V9A=$prefix64_v9a PREFIX_X64=$prefix_x64 PREFIX_X86=$prefix_x86 \
+PREFIX32=$prefix32 PREFIX64=$prefix64 PREFIX64_V9A=$prefix64_v9a PREFIX_X64=$prefix_x64 PREFIX_X86=$prefix_x86 \
 ndk-build -C app/src/main -j$cores
 
 # === ARM v9a optimized libraries — ship as assets for runtime loading ===

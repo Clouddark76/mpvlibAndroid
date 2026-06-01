@@ -6,8 +6,7 @@ cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 . ./include/depinfo.sh
 . ./include/build_config.sh
 
-# 32-bit ARM dropped — arm64 is the default
-build_arches=(arm64)
+build_arches=(armv7l arm64)
 if [ "$ENABLE_ARM_V9A" = "true" ]; then
     build_arches+=(arm64-v9a)
 fi
@@ -60,7 +59,9 @@ setup_ccache_wrappers() {
 	local ccache_bin
 	ccache_bin=$(command -v ccache)
 	local compiler
-	local compilers=(
+    local compilers=(
+		armv7a-linux-androideabi24-clang
+		armv7a-linux-androideabi24-clang++
 		aarch64-linux-android24-clang
 		aarch64-linux-android24-clang++
 	)

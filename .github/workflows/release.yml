@@ -147,8 +147,10 @@ jobs:
             build-essential \
             ccache \
             cmake \
+            dos2unix \
             gcc g++ \
             gettext \
+            glslang-tools \
             gperf \
             libtool \
             nasm \
@@ -156,6 +158,7 @@ jobs:
             pkg-config \
             python3 \
             python3-pip \
+            spirv-tools \
             unzip \
             wget
 
@@ -169,6 +172,15 @@ jobs:
           set -euxo pipefail
           cd buildscripts
           ./download.sh
+          
+          echo "Downloading latest Vulkan-Headers..."
+          if [ ! -d "deps/Vulkan-Headers" ]; then
+              git clone https://github.com/KhronosGroup/Vulkan-Headers.git deps/Vulkan-Headers
+          fi
+          
+          echo "Normalizing line endings for all scripts..."
+          cd ..
+          find . -type f \( -name '*.sh' -o -name 'gradlew' \) -exec dos2unix {} +
 
       - name: Save Android SDK cache
         if: steps.android-sdk-cache.outputs.cache-hit != 'true'
@@ -202,6 +214,10 @@ jobs:
           [ "$ENABLE_ARM_V9A" = "true" ] && arches+=(arm64-v9a)
           [ "$ENABLE_X86_ARCH" = "true" ] && arches+=(x86 x86_64)
           for arch in "${arches[@]}"; do
+            echo "Injecting Vulkan headers into prefix/$arch/include..."
+            mkdir -p "prefix/$arch/include"
+            cp -r deps/Vulkan-Headers/include/vulkan "prefix/$arch/include/"
+            cp -r deps/Vulkan-Headers/include/vk_video "prefix/$arch/include/"
             ./buildall.sh --arch "$arch" mpv
           done
 

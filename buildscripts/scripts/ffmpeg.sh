@@ -36,9 +36,16 @@ args=(
 	--target-os=android --enable-cross-compile
 	--cross-prefix=$ndk_triple- --cc=$CC --pkg-config=pkg-config --nm=llvm-nm
 	--arch=${ndk_triple%%-*} --cpu=$cpu
-	--extra-cflags="-I$prefix_dir/include $cpuflags" --extra-ldflags="-L$prefix_dir/lib"
+	--extra-cflags="-I$prefix_dir/include $cpuflags" --extra-ldflags="-L$prefix_dir/lib -lvulkan"
 
 	--enable-{jni,mediacodec,mbedtls,libdav1d}
+
+	# === VULKAN SUPPORT & OPTIMIZATIONS ===
+	--enable-vulkan
+	--enable-libshaderc
+	--enable-decoder=prores_vulkan,ffv1_vulkan,dpx_vulkan
+	--enable-encoder=ffv1_vulkan,prores_vulkan
+	--enable-filter=bwdif_vulkan,xfade_vulkan,hflip_vulkan,vflip_vulkan,scale_vulkan,overlay_vulkan,avgblur_vulkan,blend_vulkan,flip_vulkan,transpose_vulkan
 
 	# === NEW CODECS (FFmpeg n8.1.1) ===
 

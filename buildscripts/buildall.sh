@@ -89,10 +89,15 @@ loadarch () {
 }
 
 setup_prefix () {
-	if [ ! -d "$prefix_dir" ]; then
-		mkdir -p "$prefix_dir"
-		# enforce flat structure (/usr/local -> /)
+	mkdir -p "$prefix_dir"
+	# enforce flat structure (/usr/local -> /)
+	# Always re-create: cache restore may replace symlinks with real directories
+	if [ ! -L "$prefix_dir/usr" ]; then
+		rm -rf "$prefix_dir/usr"
 		ln -s . "$prefix_dir/usr"
+	fi
+	if [ ! -L "$prefix_dir/local" ]; then
+		rm -rf "$prefix_dir/local"
 		ln -s . "$prefix_dir/local"
 	fi
 

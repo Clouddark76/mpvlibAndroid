@@ -72,7 +72,7 @@ jobs:
         id: native-prefix-cache
         uses: actions/cache/restore@v4
         with:
-          path: gh-cache/
+          path: buildscripts/prefix/
           key: native-prefix-${{ runner.os }}-${{ env.CACHE_IDENTIFIER }}
           restore-keys: |
             native-prefix-${{ runner.os }}-
@@ -142,7 +142,7 @@ jobs:
         if: steps.native-prefix-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: gh-cache/
+          path: buildscripts/prefix/
           key: native-prefix-${{ runner.os }}-${{ env.CACHE_IDENTIFIER }}
 
       - name: Show ccache stats before build

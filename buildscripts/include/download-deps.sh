@@ -16,7 +16,7 @@ if [ ! -d mbedtls ]; then
 fi
 
 # dav1d (canonical repo, GitHub is read-only mirror)
-[ ! -d dav1d ] && git clone https://github.com/videolan/dav1d
+[ ! -d dav1d ] && git clone --depth 1 --branch $v_dav1d https://github.com/videolan/dav1d
 
 # vvdec — Fraunhofer VVC (H.266) decoder
 if [ ! -d vvdec ]; then

@@ -36,7 +36,7 @@ args=(
 	--target-os=android --enable-cross-compile
 	--cross-prefix=$ndk_triple- --cc=$CC --pkg-config=pkg-config --nm=llvm-nm
 	--arch=${ndk_triple%%-*} --cpu=$cpu
-	--extra-cflags="-I$prefix_dir/include $cpuflags" --extra-ldflags="-L$prefix_dir/lib -lvulkan"
+	--extra-cflags="-I$prefix_dir/include $cpuflags $CFLAGS" --extra-ldflags="-L$prefix_dir/lib -lvulkan -lGLESv2 -lEGL $LDFLAGS"
 
 	--enable-{jni,mediacodec,mbedtls,libdav1d}
 

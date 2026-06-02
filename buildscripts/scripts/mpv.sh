@@ -58,6 +58,8 @@ meson setup $build --cross-file "$prefix_dir"/crossfile.txt \
 	-Dlibcurl=enabled \
 	-Djavascript=enabled \
 	-Dvulkan=enabled \
+	-Dgl=enabled \
+	-Degl-android=enabled \
 	-Dlibmpv=true \
 	-Dcplayer=false \
 	-Dmanpage-build=disabled

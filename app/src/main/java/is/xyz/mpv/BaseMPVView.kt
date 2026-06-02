@@ -24,7 +24,6 @@ abstract class BaseMPVView(context: Context, attrs: AttributeSet) : SurfaceView(
      * Call this once before the view is shown.
      */
     fun initialize(configDir: String, cacheDir: String) {
-        MPVLib.loadLibraries(context)
         MPVLib.create(context)
 
         MPVLib.setOptionString("config", "yes")
@@ -38,7 +37,12 @@ abstract class BaseMPVView(context: Context, attrs: AttributeSet) : SurfaceView(
             Log.e(TAG, "Failed to set SSL_CERT_FILE", e)
         }
 
-
+        // Adreno-optimized Vulkan defaults for vo=gpu-next
+        MPVLib.setOptionString("gpu-api", "vulkan")
+        MPVLib.setOptionString("vulkan-async-compute", "no")
+        MPVLib.setOptionString("vulkan-async-transfer", "no")
+        MPVLib.setOptionString("vulkan-queue-count", "1")
+        MPVLib.setOptionString("vd-lavc-film-grain", "gpu")
 
         initOptions()
 

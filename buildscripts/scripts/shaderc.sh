@@ -39,11 +39,19 @@ cat >"$prefix_dir"/lib/pkgconfig/shaderc_combined.pc <<"END"
 Name: shaderc_combined
 Description:
 Version: 2022.3-unknown
-Libs: -L/usr/local/lib -lshaderc_combined
+Libs: -L/usr/local/lib -lshaderc_combined -lc++ -lm
 Cflags: -I/usr/local/include
 END
 
-if [ -z "$(pkg-config --cflags shaderc_combined)" ]; then
+cat >"$prefix_dir"/lib/pkgconfig/shaderc.pc <<"END"
+Name: shaderc
+Description:
+Version: 2022.3-unknown
+Libs: -L/usr/local/lib -lshaderc_combined -lc++ -lm
+Cflags: -I/usr/local/include
+END
+
+if [ -z "$(pkg-config --cflags shaderc_combined)" ] || [ -z "$(pkg-config --cflags shaderc)" ]; then
 	echo >&2 "shaderc pkg-config sanity check failed"
 	exit 1
 fi

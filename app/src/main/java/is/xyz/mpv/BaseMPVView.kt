@@ -36,6 +36,14 @@ abstract class BaseMPVView(context: Context, attrs: AttributeSet) : SurfaceView(
         } catch (e: Exception) {
             Log.e(TAG, "Failed to set SSL_CERT_FILE", e)
         }
+
+        // Adreno-optimized Vulkan defaults for vo=gpu-next
+        MPVLib.setOptionString("gpu-api", "vulkan")
+        MPVLib.setOptionString("vulkan-async-compute", "no")
+        MPVLib.setOptionString("vulkan-async-transfer", "no")
+        MPVLib.setOptionString("vulkan-queue-count", "1")
+        MPVLib.setOptionString("vd-lavc-film-grain", "gpu")
+
         initOptions()
 
         MPVLib.init()
@@ -74,7 +82,7 @@ abstract class BaseMPVView(context: Context, attrs: AttributeSet) : SurfaceView(
         this.filePath = filePath
     }
 
-    private var voInUse: String = "gpu"
+    private var voInUse: String = "gpu-next"
 
     /**
      * Sets the VO to use.

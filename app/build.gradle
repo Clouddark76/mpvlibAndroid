@@ -11,7 +11,7 @@ android {
     compileSdk 36
 
     defaultConfig {
-        minSdkVersion 24
+        minSdkVersion 33
         targetSdkVersion 36
 
         versionCode 38
@@ -20,6 +20,12 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/libs']
+        }
     }
 
     // https://youtrack.jetbrains.com/issue/KT-55947

@@ -47,7 +47,7 @@ dep_mpv_android=(mpv python)
 ## for CI workflow
 
 # pinned ffmpeg revision
-v_ci_ffmpeg=n8.1
+v_ci_ffmpeg=n8.1.1
 
 # filename used to uniquely identify a build prefix
 ci_tarball="prefix-all-ndk-${v_ndk}-lua-${v_lua}-mujs-${v_mujs}-unibreak-${v_unibreak}-harfbuzz-${v_harfbuzz}-fribidi-${v_fribidi}-freetype-${v_freetype}-mbedtls-${v_mbedtls}-openssl-${v_openssl}-python-${v_python}-curl-${v_curl}-ffmpeg-${v_ci_ffmpeg}.tgz"

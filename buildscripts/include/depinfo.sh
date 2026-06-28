@@ -4,8 +4,8 @@
 # Make sure to keep v_ndk and v_ndk_n in sync, both are listed on the NDK download page
 
 v_sdk=14742923_latest
-v_ndk=r28c
-v_ndk_n=28.2.13676358
+v_ndk=r29
+v_ndk_n=29.0.14206865
 v_sdk_platform=36
 v_sdk_build_tools=36.0.0
 
@@ -14,8 +14,8 @@ v_unibreak=7.0
 v_harfbuzz=14.2.1
 v_fribidi=1.0.16
 v_freetype=2.14.3
-v_mbedtls=3.6.5
-v_openssl=3.5.5
+v_mbedtls=3.6.6
+v_openssl=3.5.7
 v_python=3.13.12
 v_ytdlp=2026.03.17
 v_curl=8.20.0

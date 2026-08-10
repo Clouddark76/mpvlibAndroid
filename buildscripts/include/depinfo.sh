@@ -14,11 +14,11 @@ v_unibreak=7.0
 v_harfbuzz=14.2.1
 v_fribidi=1.0.16
 v_freetype=2.14.3
-v_mbedtls=3.6.6
+v_mbedtls=3.6.7
 v_openssl=3.5.7
 v_python=3.13.12
 v_ytdlp=2026.03.17
-v_curl=8.20.0
+v_curl=8.21.0
 v_mujs=1.3.9
 
 
@@ -47,7 +47,7 @@ dep_mpv_android=(mpv python)
 ## for CI workflow
 
 # pinned ffmpeg revision
-v_ci_ffmpeg=n8.1.2
+v_ci_ffmpeg=n9.0
 
 # filename used to uniquely identify a build prefix
 ci_tarball="prefix-all-ndk-${v_ndk}-lua-${v_lua}-mujs-${v_mujs}-unibreak-${v_unibreak}-harfbuzz-${v_harfbuzz}-fribidi-${v_fribidi}-freetype-${v_freetype}-mbedtls-${v_mbedtls}-openssl-${v_openssl}-python-${v_python}-curl-${v_curl}-ffmpeg-${v_ci_ffmpeg}.tgz"

@@ -27,7 +27,7 @@ fi
 # freetype2 - latest is 2.14.3
 if [ ! -d freetype2 ]; then
 	mkdir freetype2
-	$WGET https://mirrors.ocf.berkeley.edu/nongnu/freetype/freetype-$v_freetype.tar.gz -O - | \
+	$WGET https://mirror.csclub.uwaterloo.ca/nongnu/freetype/freetype-$v_freetype.tar.gz -O - | \
 		tar -xz -C freetype2 --strip-components=1
 fi
 
